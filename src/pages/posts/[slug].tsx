@@ -3,7 +3,6 @@ import { useRouter } from "next/router"
 import SEO from "../../components/SEO"
 import styles from './post.module.scss'
 import { RichText } from 'prismic-dom'
-import Prismic from '@prismicio/client'
 import { getPrismicClient } from "../services/prismic"
 
 interface IPostProps {
@@ -13,6 +12,14 @@ interface IPostProps {
     content: string;
     updatedAt: string;
   }
+}
+
+interface IPostData {
+  slug: string;
+  title: string;
+  content: string;
+  updatedAt: string;
+
 }
 
 
@@ -58,12 +65,12 @@ export const getStaticProps: GetStaticProps = async context => {
 
   const prismic = getPrismicClient();
 
-  const response = await prismic.getByUID('post', String(slug), {});
+  const response = await prismic.getByUID<IPostData>('post', String(slug), {});
 
   const post = {
     slug,
     title: RichText.asText(response.data.title),
-    content: RichText.asText(response.data.content),
+    content: RichText.asHtml(response.data.content),
     updatedAt: new Date(response.last_publication_date).toLocaleDateString(
       'pt-BR',
       {
