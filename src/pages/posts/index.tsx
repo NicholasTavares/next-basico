@@ -13,6 +13,18 @@ interface IPost {
   updatedAt: string;
 }
 
+interface IPostData {
+  slug: string;
+  title: string;
+  content: IContentData[];
+  updatedAt: string;
+}
+
+interface IContentData {
+  type: string
+  text: string
+}
+
 interface IPostsProps {
   posts: IPost[]
 }
@@ -41,7 +53,7 @@ export default function Posts({ posts }: IPostsProps) {
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient()
 
-  const response = await prismic.query([
+  const response = await prismic.query<IPostData>([
     Prismic.predicates.at('document.type', 'post')
   ], {
     fetch: ['post.title', 'post.content']
